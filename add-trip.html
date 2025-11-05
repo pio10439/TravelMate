@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TravelMate - Add Trip</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/utils.js" defer></script>
+    <script src="translations/nav-translation.js" defer></script>
+    <script src="translations/translation.js" defer></script>
+    <script src="js/theme.js" defer></script>
+    <script src="js/add-trip.js" defer></script>
+    <script src="js/toast.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <div class="header-top">
+        <h1>Add Trip</h1>
+      </div>
+      <nav>
+        <a href="index.html">Dashboard</a>
+        <a href="add-trip.html" class="active">Add Trip</a>
+        <a href="map.html">Map</a>
+        <a href="weather.html">Weather</a>
+        <a href="settings.html">Settings</a>
+      </nav>
+    </header>
+    <main>
+      <form id="trip-form">
+        <input type="text" id="trip-name" placeholder="Trip Name" required />
+        <input
+          type="text"
+          id="trip-city"
+          placeholder="Destination City"
+          required
+        />
+        <textarea
+          style="resize: none"
+          id="trip-desc"
+          placeholder="What do you want to see? Use · for bullet points"
+          required
+        ></textarea>
+        <div class="photo-section">
+          <button type="button" id="from-camera">Zrób zdjęcie</button>
+          <button type="button" id="from-gallery">Wybierz z galerii</button>
+        </div>
+        <img
+          id="photo-preview"
+          src=""
+          alt="Podgląd"
+          style="
+            display: none;
+            max-width: 100%;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+          "
+        />
+        <input
+          type="file"
+          id="camera-input"
+          accept="image/*"
+          capture="environment"
+          style="display: none"
+        />
+        <input
+          type="file"
+          id="gallery-input"
+          accept="image/*"
+          style="display: none"
+        />
+        <div class="location-section">
+          <button type="button" id="get-location">Get GPS Location</button>
+          <p id="current-location-display">
+            Your current location: not detected yet
+          </p>
+        </div>
+        <button type="submit">Save Trip</button>
+      </form>
+    </main>
+    <div id="toast-container"></div>
+  </body>
+</html>

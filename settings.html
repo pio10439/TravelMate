@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TravelMate - Settings</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/utils.js" defer></script>
+    <script src="translations/nav-translation.js" defer></script>
+    <script src="translations/settings-translations.js" defer></script>
+    <script src="js/theme.js" defer></script>
+    <script src="js/settings.js" defer></script>
+    <script src="js/toast.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <div class="header-top">
+        <h1>Settings</h1>
+      </div>
+      <nav>
+        <a href="index.html">Dashboard</a>
+        <a href="add-trip.html">Add Trip</a>
+        <a href="map.html">Map</a>
+        <a href="weather.html">Weather</a>
+        <a href="settings.html" class="active">Settings</a>
+      </nav>
+    </header>
+    <main>
+      <div class="settings-section card">
+        <h2 class="appearance-title">Appearance</h2>
+        <div class="setting-item">
+          <label for="toggle-theme" class="theme-label">Theme</label>
+          <button id="toggle-theme">Toggle Dark Mode</button>
+        </div>
+      </div>
+      <div class="settings-section card">
+        <h2 class="preferences-title">Preferences</h2>
+        <div class="setting-item">
+          <label for="language-select" class="language-label">Language</label>
+          <select id="language-select">
+            <option value="English">English</option>
+            <option value="Polish">Polish</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label class="temp-unit-label">Temperature Unit</label>
+          <div class="radio-group">
+            <label for="celsius">
+              <input
+                type="radio"
+                id="celsius"
+                name="temp-unit"
+                value="celsius"
+                checked
+              />
+              <span class="temp-unit-text">Celsius</span>
+            </label>
+            <label for="fahrenheit">
+              <input
+                type="radio"
+                id="fahrenheit"
+                name="temp-unit"
+                value="fahrenheit"
+              />
+              <span class="temp-unit-text">Fahrenheit</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="settings-section card">
+        <h2 class="notifications-title">Notifications</h2>
+        <div class="setting-item">
+          <label for="notif-toggle" class="notif-status-label"
+            >Notification Status</label
+          >
+          <button id="notif-toggle">Enable Notifications</button>
+        </div>
+        <div class="setting-item">
+          <label class="notif-freq-label">Notification Frequency</label>
+          <div class="radio-group">
+            <label for="notif-off">
+              <input
+                type="radio"
+                id="notif-off"
+                name="notif-freq"
+                value="off"
+                checked
+              />
+              <span class="notif-freq-text">Off</span>
+            </label>
+            <label for="notif-daily">
+              <input
+                type="radio"
+                id="notif-daily"
+                name="notif-freq"
+                value="daily"
+              />
+              <span class="notif-freq-text">Daily</span>
+            </label>
+            <label for="notif-weekly">
+              <input
+                type="radio"
+                id="notif-weekly"
+                name="notif-freq"
+                value="weekly"
+              />
+              <span class="notif-freq-text">Weekly</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div id="toast" class="toast"></div>
+    </main>
+    <div id="toast-container"></div>
+  </body>
+</html>

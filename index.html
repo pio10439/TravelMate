@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TravelMate - Dashboard</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/utils.js" defer></script>
+    <script src="translations/nav-translation.js" defer></script>
+    <script src="translations/translation.js" defer></script>
+    <script src="js/theme.js" defer></script>
+    <script src="js/toast.js" defer></script>
+    <script src="js/main.js" defer></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('./sw.js')
+            .then(reg => console.log('SW register success', reg.scope))
+            .catch(err => console.error('SW register failed', err));
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <header>
+      <div class="header-top">
+        <h1>TravelMate</h1>
+      </div>
+      <nav>
+        <a href="index.html" class="active">Dashboard</a>
+        <a href="add-trip.html">Add Trip</a>
+        <a href="map.html">Map</a>
+        <a href="weather.html">Weather</a>
+        <a href="settings.html">Settings</a>
+      </nav>
+    </header>
+    <main>
+      <h2>Your Trips</h2>
+      <ul id="trip-list"></ul>
+    </main>
+    <div id="toast-container"></div>
+  </body>
+</html>

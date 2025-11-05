@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TravelMate - Trip Map</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="js/utils.js" defer></script>
+    <script src="translations/nav-translation.js" defer></script>
+    <script src="translations/map-translations.js" defer></script>
+    <script src="js/theme.js" defer></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js" defer></script>
+    <script src="js/map.js" defer></script>
+    <script src="js/toast.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <div id="offline-banner" class="offline-banner" style="display: none">
+        <span id="offline-text"></span>
+      </div>
+      <div class="header-top">
+        <h1>Trip Map</h1>
+      </div>
+      <nav>
+        <a href="index.html">Dashboard</a>
+        <a href="add-trip.html">Add Trip</a>
+        <a href="map.html" class="active">Map</a>
+        <a href="weather.html">Weather</a>
+        <a href="settings.html">Settings</a>
+      </nav>
+    </header>
+    <main>
+      <div id="map" style="height: 80vh; width: 100%"></div>
+    </main>
+  </body>
+</html>
