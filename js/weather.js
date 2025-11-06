@@ -1,10 +1,9 @@
-const apiKey = '89f7ee0e098f472e88492420252310';
+const apiKey = '89f7ee0e098f472e88492420252310'; // klucz Api z WeatherApi
 const weatherDisplay = document.getElementById('weather-display');
 const hintContainer = document.getElementById('offline-weather-hint');
 const hintText = document.getElementById('hint-text');
 const cityInput = document.getElementById('city-input');
-
-// === 1. FUNKCJE NA GÓRZE ===
+// Dobor klasy css w zaleznosci od pogody zeby wyswietlic animacje
 function getWeatherClass(condition) {
   const c = condition.toLowerCase();
   if (c.includes('sunny') || c.includes('clear')) return 'sunny';
@@ -13,7 +12,7 @@ function getWeatherClass(condition) {
     return 'rainy';
   return '';
 }
-
+// Tlumaczenia
 function updateWeatherUI() {
   document.querySelector('header h1').textContent = getTranslation(
     'weatherTitle',
@@ -29,7 +28,7 @@ function updateWeatherUI() {
   );
   cityInput.placeholder = getTranslation('cityInputPlaceholder', translations);
 }
-
+// Info o ostaniej aktualizacji jak jest offline
 function updateHint() {
   const last = localStorage.getItem('lastWeather');
   if (!last || navigator.onLine) {
@@ -61,10 +60,11 @@ function updateHint() {
     hintContainer.style.display = 'none';
   }
 }
-
+// Wyswietlenie pogody
 function showWeather(data) {
   weatherDisplay.className = '';
   if (data.error) {
+    // jak jest blad
     weatherDisplay.classList.add('error');
     weatherDisplay.innerHTML = `<p class="error-message">${getTranslation(
       'cityNotFound',
@@ -74,15 +74,16 @@ function showWeather(data) {
     return;
   }
 
-  const c = data.current;
-  const l = data.location;
-  const iconUrl = 'https:' + c.condition.icon;
-  const cls = getWeatherClass(c.condition.text);
+  const c = data.current; //aktualna pogoda
+  const l = data.location; //lokalizacja
+  const iconUrl = 'https:' + c.condition.icon; // ikonka z Api
+  const cls = getWeatherClass(c.condition.text); // klasa ustalona do tla
+  // jednostki
   const unit = localStorage.getItem('tempUnit') || 'celsius';
   const temp = unit === 'fahrenheit' ? c.temp_f : c.temp_c;
   const feels = unit === 'fahrenheit' ? c.feelslike_f : c.feelslike_c;
   const sym = unit === 'fahrenheit' ? '°F' : '°C';
-
+  // generowanie HTML z wyswietlaniem pogody
   weatherDisplay.classList.add(cls);
   weatherDisplay.innerHTML = `
     <h2>${l.name}, ${l.country}</h2>
@@ -101,11 +102,10 @@ function showWeather(data) {
     <p>${getTranslation('uvIndexLabel', translations)}: ${c.uv}</p>
   `;
 
-  localStorage.setItem('lastWeather', JSON.stringify(data));
+  localStorage.setItem('lastWeather', JSON.stringify(data)); // zapis do bazy zeby wyswietlic jak bedzie offline
   updateHint();
 }
-
-// === 2. FETCH ===
+// Pobranie danych z Api
 function fetchWeatherByCity(city) {
   fetch(
     `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=no`
@@ -129,8 +129,7 @@ function fetchWeatherByCoords(lat, lon) {
       if (last) showWeather(JSON.parse(last));
     });
 }
-
-// === 3. ODŚWIEŻANIE ===
+// odswiezenie
 function refreshAll() {
   const last = localStorage.getItem('lastWeather');
   if (last) showWeather(JSON.parse(last));
@@ -138,8 +137,7 @@ function refreshAll() {
   updateNavUI();
   updateHint();
 }
-
-// === 4. EVENTY ===
+// Nasluchiwanie zmian
 window.addEventListener('load', refreshAll);
 document.addEventListener('languageChange', refreshAll);
 window.addEventListener('online', () => {
@@ -147,7 +145,7 @@ window.addEventListener('online', () => {
   refreshAll();
 });
 window.addEventListener('offline', refreshAll);
-
+// Pobranie pogody z aktualnej lokalizacji
 document.getElementById('get-location').addEventListener('click', () => {
   if (!navigator.geolocation)
     return alert(getTranslation('errorNoGeolocation', translations));
@@ -156,7 +154,7 @@ document.getElementById('get-location').addEventListener('click', () => {
     () => alert(getTranslation('errorNoLocation', translations))
   );
 });
-
+// Pobranie pogody po wpisaniu miasta
 document.getElementById('get-city').addEventListener('click', () => {
   const city = cityInput.value.trim();
   if (!city) return alert(getTranslation('errorNoCity', translations));

@@ -6,7 +6,7 @@ const notifFreqRadios = document.getElementsByName('notif-freq');
 const toast = document.getElementById('toast');
 
 let notifInterval = null;
-
+// Tlumaczenia
 function updateSettingsUI() {
   document.querySelector('header h1').textContent = getTranslation(
     'settingsTitle',
@@ -72,7 +72,7 @@ function updateSettingsUI() {
     "label[for='notif-weekly'] .notif-freq-text"
   ).textContent = getTranslation('notifWeekly', translations);
 }
-
+// Zmiana trybu jasny/ciemny
 toggleThemeBtn.addEventListener('click', () => {
   document.body.classList.toggle('dark-theme');
   const isDark = document.body.classList.contains('dark-theme');
@@ -84,7 +84,7 @@ toggleThemeBtn.addEventListener('click', () => {
     getTranslation('toastThemeSwitched', translations).replace('{mode}', mode)
   );
 });
-
+// Zmiana jezyka PL/EN
 languageSelect.addEventListener('change', () => {
   const language = languageSelect.value;
   localStorage.setItem('language', language);
@@ -98,7 +98,7 @@ languageSelect.addEventListener('change', () => {
   );
   document.dispatchEvent(new CustomEvent('languageChange'));
 });
-
+// Zmiana jednostek temp
 tempUnitRadios.forEach(radio => {
   radio.addEventListener('change', () => {
     const unit = radio.value;
@@ -111,7 +111,7 @@ tempUnitRadios.forEach(radio => {
     );
   });
 });
-
+// Zmiana czestotliwosci powiadomien
 notifFreqRadios.forEach(radio => {
   radio.addEventListener('change', () => {
     const freq = radio.value;
@@ -153,7 +153,7 @@ window.addEventListener('load', () => {
   updateSettingsUI();
   updateNavUI();
 });
-
+// Wlacz/wylacz powiadomienia
 notifToggleBtn.addEventListener('click', async () => {
   const notifEnabled = localStorage.getItem('notificationsEnabled') === 'true';
 
@@ -161,7 +161,7 @@ notifToggleBtn.addEventListener('click', async () => {
     if (!('Notification' in window)) {
       return alert(getTranslation('toastNotifPermissionDenied', translations));
     }
-
+    // Pozwolenia na powiadomienia
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
       localStorage.setItem('notificationsEnabled', 'true');
@@ -178,7 +178,7 @@ notifToggleBtn.addEventListener('click', async () => {
     showToast(getTranslation('toastNotifDisabled', translations));
   }
 });
-
+// Interwal powiadomien
 function updateNotifications() {
   stopNotifications();
   const notifEnabled = localStorage.getItem('notificationsEnabled') === 'true';
@@ -195,11 +195,11 @@ function updateNotifications() {
 
   if (interval) notifInterval = setInterval(sendDailyNotification, interval);
 }
-
+// zatrzymanie powiadomien
 function stopNotifications() {
   if (notifInterval) clearInterval(notifInterval);
 }
-
+// Wysyla powiadomienia
 function sendDailyNotification() {
   if (Notification.permission === 'granted' && 'serviceWorker' in navigator) {
     navigator.serviceWorker.ready.then(registration => {
@@ -219,7 +219,7 @@ function updateNotifButton(isEnabled) {
     ? getTranslation('disableNotifications', translations)
     : getTranslation('enableNotifications', translations);
 }
-
+// Komunikat
 function showToast(message) {
   toast.textContent = message;
   toast.classList.add('show');

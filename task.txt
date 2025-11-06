@@ -3,14 +3,14 @@
 ✅ Wykorzystanie natywnych możliwości urządzenia:
 ✅ Wyjaśnienie: Aplikacja powinna wykorzystywać co najmniej dwie natywne funkcję urządzenia, taką jak dostęp do kamery, mikrofonu, geolokalizacji, powiadomień push itp.
 ✅ Dodatkowe kryterium: Studenci powinni być w stanie opisać, jakie natywne funkcje zostały wykorzystane i jak je zaimplementowali.
-✅  Aplikacja powinna działać w trybie offline:
-✅  Wyjaśnienie: Aplikacja powinna korzystać z Service Workers i Cache API, aby przechowywać zasoby i umożliwiać działanie aplikacji bez dostępu do internetu.
-✅  Dodatkowe kryterium: Aplikacja powinna informować użytkownika o braku połączenia i oferować funkcje dostępne offline.
+✅ Aplikacja powinna działać w trybie offline:
+✅ Wyjaśnienie: Aplikacja powinna korzystać z Service Workers i Cache API, aby przechowywać zasoby i umożliwiać działanie aplikacji bez dostępu do internetu.
+✅ Dodatkowe kryterium: Aplikacja powinna informować użytkownika o braku połączenia i oferować funkcje dostępne offline.
 ✅ Min. 3 widoki ze spójnym flow:
 ✅ Wyjaśnienie: Aplikacja powinna posiadać co najmniej trzy różne ekrany lub widoki, które są logicznie powiązane i oferują spójne doświadczenie użytkownika.
 ✅ Dodatkowe kryterium: Każdy widok powinien posiadać jasno zdefiniowany cel i funkcjonalność, a przejścia między widokami powinny być intuicyjne.
-🚨 Aplikacja postawiona na hostingu:
-🚨 Wyjaśnienie: Aplikacja powinna być dostępna online za pomocą bezpiecznego połączenia HTTPS.
+✅ Aplikacja postawiona na hostingu:
+✅ Wyjaśnienie: Aplikacja powinna być dostępna online za pomocą bezpiecznego połączenia HTTPS.
 ✅ Responsywność:
 ✅ Wyjaśnienie: Aplikacja powinna być responsywna, co oznacza, że powinna dostosowywać się do różnych rozmiarów ekranu.
 ✅ Wydajność:
@@ -19,6 +19,6 @@
 ✅ Wyjaśnienie: Strategie buforowania używane w Service Worker powinny być odpowiednie odpowiednie dla różnych rodzajów zasobów.
 ✅ Jakość kodu:
 ✅ Wyjaśnienie: Kod powinien być czytelny, dobrze zorganizowany i zgodny z najlepszymi praktykami.
-🚨 Dokumentacja kodu i projektu
-🚨 Wyjaśnienie: Kod źródłowy powinien być odpowiednio skomentowany, a README projektu na GitHubie powinno zawierać instrukcje uruchomienia projektu, zależności, użyte technologie i funkcjonalności.
+✅  Dokumentacja kodu i projektu
+✅  Wyjaśnienie: Kod źródłowy powinien być odpowiednio skomentowany, a README projektu na GitHubie powinno zawierać instrukcje uruchomienia projektu, zależności, użyte technologie i funkcjonalności.
 

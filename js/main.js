@@ -2,10 +2,10 @@ let trips = JSON.parse(localStorage.getItem('trips') || '[]');
 const tripList = document.getElementById('trip-list');
 let pendingPhoto = null;
 let currentEditForm = null;
-
+// Generowanie listy
 function renderTrips() {
-  trips.sort((a, b) =>
-    a.completed === b.completed ? 0 : a.completed ? 1 : -1
+  trips.sort(
+    (a, b) => (a.completed === b.completed ? 0 : a.completed ? 1 : -1) //sortowanie
   );
   if (trips.length === 0) {
     tripList.innerHTML = `<p class="no-trips">${
@@ -14,7 +14,7 @@ function renderTrips() {
     }</p>`;
     return;
   }
-
+  // html dla kazdej podrozy
   tripList.innerHTML = trips
     .map((trip, idx) => {
       const name = trip.name || '—';
@@ -22,7 +22,7 @@ function renderTrips() {
       const currentCity = trip.currentCity || '—';
       const desc = trip.desc || '';
 
-      const formattedDesc =
+      const formattedDesc = //formatowanie jak sa kropki albo punkty
         desc
           .split(/\.\s+/)
           .map(p => p.trim())
@@ -38,7 +38,7 @@ function renderTrips() {
               : `• ${p}`
           )
           .join('<br>') || '—';
-
+      //karta podrozy
       return `
       <li class="trip-item ${
         trip.completed ? 'completed' : ''
@@ -91,7 +91,7 @@ function renderTrips() {
             </div>
             <div class="setting-item">
               <label>${getTranslation('tripDescPlaceholder')}</label>
-              <textarea class="edit-desc" placeholder="${getTranslation(
+              <textarea class="edit-desc" style="resize: none" placeholder="${getTranslation(
                 'tripDescPlaceholder'
               )}" required>${desc}</textarea>
             </div>
@@ -101,16 +101,11 @@ function renderTrips() {
             </div>
 
             <div class="photo-section">
-              <button type="button" class="photo-btn" data-type="camera">${getTranslation(
+              <button type="button" class="photo-btn">${getTranslation(
                 'photoFromCamera'
               )}</button>
-              <button type="button" class="photo-btn" data-type="gallery">${getTranslation(
-                'photoFromGallery'
-              )}</button>
             </div>
-            <input type="file" class="edit-camera" accept="image/*" capture="environment" style="display:none">
-            <input type="file" class="edit-gallery" accept="image/*" style="display:none">
-
+            <input type="file" class="edit-photo-input" accept="image/*" style="display:none">
             <div class="edit-actions">
               <button type="submit" class="btn-save">${getTranslation(
                 'saveTripButton'
@@ -126,11 +121,11 @@ function renderTrips() {
     })
     .join('');
 }
-
+//Zapis
 function saveTrips() {
   localStorage.setItem('trips', JSON.stringify(trips));
 }
-
+//checkbox
 tripList.addEventListener('change', e => {
   if (e.target.matches('input[type="checkbox"]')) {
     const idx = +e.target.dataset.index;
@@ -138,8 +133,8 @@ tripList.addEventListener('change', e => {
     saveTrips();
     renderTrips();
   }
-
-  if (e.target.matches('.edit-camera, .edit-gallery')) {
+  // wybor zdjecia
+  if (e.target.matches('.edit-photo-input')) {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -164,7 +159,7 @@ tripList.addEventListener('click', e => {
 
   const li = btn.closest('li');
   const idx = +li.dataset.id;
-
+  //edycja
   if (btn.classList.contains('btn-edit')) {
     li.querySelector('.trip-view').style.display = 'none';
     li.querySelector('.trip-edit').style.display = 'block';
@@ -174,7 +169,7 @@ tripList.addEventListener('click', e => {
       'none';
     return;
   }
-
+  //usuniecie
   if (btn.classList.contains('btn-delete')) {
     if (
       confirm(
@@ -190,8 +185,8 @@ tripList.addEventListener('click', e => {
   }
 
   if (btn.classList.contains('photo-btn')) {
-    const type = btn.dataset.type;
-    li.querySelector(`.edit-${type}`).click();
+    const li = btn.closest('li');
+    li.querySelector('.edit-photo-input').click();
     return;
   }
 
@@ -200,7 +195,7 @@ tripList.addEventListener('click', e => {
     renderTrips();
   }
 });
-
+// zapis edycji
 tripList.addEventListener('submit', e => {
   if (!e.target.matches('.edit-form')) return;
   e.preventDefault();
@@ -218,7 +213,7 @@ tripList.addEventListener('submit', e => {
   saveTrips();
   renderTrips();
 });
-
+// Aktualizacja UI po tlumaczeniu
 function updateUI() {
   document.querySelector('header h1').textContent = getTranslation(
     'dashboardTitle',

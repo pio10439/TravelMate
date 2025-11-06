@@ -1,10 +1,11 @@
 function getTranslation(key, translationsObj = translations) {
-  const language = localStorage.getItem('language') || 'English';
+  // Pobranie tlumaczenia
+  const language = localStorage.getItem('language') || 'English'; // sprawdzenie zapisanego jezyka, domyslnie ang
   return (
     translationsObj[language]?.[key] || translationsObj.English?.[key] || key
   );
 }
-
+// Alktualizacja tekstu w pasku nawigacji
 function updateNavUI() {
   const navLinks = document.querySelectorAll('nav a');
   navLinks[0].textContent = getTranslation('dashboardNav', navTranslations);

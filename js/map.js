@@ -1,11 +1,11 @@
-const map = L.map('map').setView([0, 0], 2);
-
+const map = L.map('map').setView([0, 0], 2); // Widok na srodek swiata i zoom 2
+// OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
 }).addTo(map);
-
+// Zapis odwiedzonych miejsc
 let visitedPlaces = JSON.parse(localStorage.getItem('visitedPlaces') || '[]');
-
+// Tlumaczenia
 function updateMapUI() {
   document.querySelector('header h1').textContent = getTranslation(
     'mapTitle',
@@ -16,7 +16,7 @@ function updateMapUI() {
 
 function addVisitedMarker(place) {
   if (!place.lat || !place.lon) return;
-
+  // Marker z popupem
   const marker = L.marker([place.lat, place.lon]).addTo(map).bindPopup(`
     <b>${getTranslation('nameLabel', translations)}: ${place.name}</b><br>
     ${getTranslation('cityLabel', translations)}: ${place.city}<br>
@@ -27,7 +27,7 @@ function addVisitedMarker(place) {
       translations
     )}</button>
   `);
-
+  // Usuwanie
   marker.on('popupopen', () => {
     const btn = document.querySelector('.delete-btn');
     if (btn) {
@@ -41,9 +41,9 @@ function addVisitedMarker(place) {
     }
   });
 }
-
+// Ladowanie miejsc po otworzeniu apki
 visitedPlaces.forEach(addVisitedMarker);
-
+//Dodanie miejsc przy uzyciu promptow
 map.on('click', function (e) {
   const name = prompt(getTranslation('enterNamePrompt', translations));
   if (!name) return;
@@ -59,7 +59,7 @@ map.on('click', function (e) {
     lon: e.latlng.lng,
     photo: '',
   };
-
+  //Zapis
   visitedPlaces.push(newPlace);
   localStorage.setItem('visitedPlaces', JSON.stringify(visitedPlaces));
   addVisitedMarker(newPlace);
@@ -68,7 +68,7 @@ map.on('click', function (e) {
 window.addEventListener('load', () => {
   updateMapUI();
 });
-
+// Aktualizacja popupow po zmianie jezyka
 document.addEventListener('languageChange', () => {
   updateMapUI();
   map.eachLayer(layer => {
