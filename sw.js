@@ -48,7 +48,6 @@ async function trimCache(cacheName, maxItems) {
   }
 }
 
-// Instalacja SW i cache
 self.addEventListener('install', event => {
   event.waitUntil(
     (async () => {
@@ -59,7 +58,6 @@ self.addEventListener('install', event => {
   );
 });
 
-// Aktywacja i czyszczenie starych cache
 self.addEventListener('activate', event => {
   event.waitUntil(
     (async () => {
@@ -74,12 +72,10 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch handler
 self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // API – network first
   if (
     url.hostname.includes('api.weatherapi.com') ||
     url.hostname.includes('nominatim.openstreetmap.org')
@@ -90,7 +86,6 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Nawigacja – network first, fallback offline.html
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
@@ -107,7 +102,6 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Zasoby statyczne – cache first
   event.respondWith(
     caches.match(request).then(cached => {
       if (cached) return cached;
