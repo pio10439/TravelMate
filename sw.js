@@ -75,7 +75,6 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
-
   if (
     url.hostname.includes('api.weatherapi.com') ||
     url.hostname.includes('nominatim.openstreetmap.org')
@@ -88,16 +87,20 @@ self.addEventListener('fetch', event => {
 
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
-        .then(response => {
-          if (response.ok) {
-            caches
-              .open(CACHE_NAME)
-              .then(cache => cache.put(request, response.clone()));
-          }
-          return response;
-        })
-        .catch(() => caches.match('/offline.html'))
+      caches.match(request).then(cachedResponse => {
+        if (cachedResponse) return cachedResponse;
+
+        return fetch(request)
+          .then(response => {
+            if (response.ok) {
+              caches
+                .open(CACHE_NAME)
+                .then(cache => cache.put(request, response.clone()));
+            }
+            return response;
+          })
+          .catch(() => caches.match('/offline.html'));
+      })
     );
     return;
   }

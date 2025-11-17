@@ -58,25 +58,6 @@
         }
       });
     </script>
-    <script>
-      document
-        .getElementById('back-to-app')
-        ?.addEventListener('click', async () => {
-          try {
-            const allClients = await clients.matchAll({
-              includeUncontrolled: true,
-              type: 'window',
-            });
-            if (allClients.length > 0) {
-              allClients[0].focus();
-            } else {
-              clients.openWindow('/index.html');
-            }
-          } catch (err) {
-            location.href = '/index.html';
-          }
-        });
-    </script>
   </head>
   <body>
     <div class="offline-page" role="region" aria-label="Offline-status">
@@ -89,9 +70,15 @@
         available.
       </p>
 
-      <button type="button" class="btn-home" id="back-to-app" role="button">
-        <span data-key="backToApp">Wróć do aplikacji</span>
-      </button>
+      <a
+        href="/index.html"
+        class="btn-home"
+        role="button"
+        aria-label="Return to the main page"
+        data-key="backToApp"
+      >
+        Back to app
+      </a>
     </div>
     <div id="toast-container" role="alert" aria-live="polite"></div>
   </body>
