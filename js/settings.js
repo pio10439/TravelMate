@@ -249,8 +249,7 @@ function updateNotifications() {
     return;
   }
   if (freq === 'daily') {
-    //test 24 * 60 * 60 * 1000;
-    interval = 10 * 1000;
+    interval = 10 * 1000; // dla test co 10s normalnie 24 * 60 * 60 * 1000;
   } else if (freq === 'weekly') {
     interval = 7 * 24 * 60 * 60 * 1000;
   }

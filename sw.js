@@ -48,6 +48,7 @@ async function trimCache(cacheName, maxItems) {
   }
 }
 
+// Instalacja SW i cache
 self.addEventListener('install', event => {
   event.waitUntil(
     (async () => {
@@ -58,6 +59,7 @@ self.addEventListener('install', event => {
   );
 });
 
+// Aktywacja i czyszczenie starych cache
 self.addEventListener('activate', event => {
   event.waitUntil(
     (async () => {
@@ -72,65 +74,55 @@ self.addEventListener('activate', event => {
   );
 });
 
+// Fetch handler
 self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
+  // API – network first
   if (
     url.hostname.includes('api.weatherapi.com') ||
     url.hostname.includes('nominatim.openstreetmap.org')
   ) {
     event.respondWith(
-      (async () => {
-        try {
-          const response = await fetch(request);
-          if (!response.ok) throw new Error();
-          return response;
-        } catch (err) {
-          const cache = await caches.open(CACHE_NAME);
-          const cachedResponse = await cache.match('/offline.html');
-          return cachedResponse || Response.error();
-        }
-      })()
-    );
-    return;
-  }
-  if (request.headers.get('accept')?.includes('text/html')) {
-    event.respondWith(
-      (async () => {
-        try {
-          const response = await fetch(request);
-          const cache = await caches.open(CACHE_NAME);
-          cache.put(request, response.clone());
-          return response;
-        } catch (err) {
-          const cache = await caches.open(CACHE_NAME);
-          const cachedResponse =
-            (await cache.match(request)) ||
-            (await cache.match('/offline.html'));
-          return cachedResponse;
-        }
-      })()
+      fetch(request).catch(() => caches.match('/offline.html'))
     );
     return;
   }
 
+  // Nawigacja – network first, fallback offline.html
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          if (response.ok) {
+            caches
+              .open(CACHE_NAME)
+              .then(cache => cache.put(request, response.clone()));
+          }
+          return response;
+        })
+        .catch(() => caches.match('/offline.html'))
+    );
+    return;
+  }
+
+  // Zasoby statyczne – cache first
   event.respondWith(
-    (async () => {
-      const cache = await caches.open(CACHE_NAME);
-      const cached = await cache.match(request);
+    caches.match(request).then(cached => {
       if (cached) return cached;
 
-      try {
-        const response = await fetch(request);
-        if (response.ok) {
-          await cache.put(request, response.clone());
-          trimCache(CACHE_NAME, MAX_CACHE_ITEMS);
-        }
-        return response;
-      } catch (err) {
-        return caches.match('/offline.html');
-      }
-    })()
+      return fetch(request)
+        .then(response => {
+          if (response.ok) {
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(request, response.clone());
+              trimCache(CACHE_NAME, MAX_CACHE_ITEMS);
+            });
+          }
+          return response;
+        })
+        .catch(() => new Response('', { status: 504 }));
+    })
   );
 });
