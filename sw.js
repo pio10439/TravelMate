@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v10';
+const CACHE_VERSION = 'v11';
 const CACHE_NAME = `travelmate-cache-${CACHE_VERSION}`;
 const MAX_CACHE_ITEMS = 50;
 
@@ -37,7 +37,6 @@ const EXTERNAL_ASSETS = [
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
 ];
-
 async function trimCache(cacheName, maxItems) {
   const cache = await caches.open(cacheName);
   const keys = await cache.keys();
@@ -50,25 +49,25 @@ async function trimCache(cacheName, maxItems) {
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    (async () => {
-      const cache = await caches.open(CACHE_NAME);
-      await cache.addAll([...APP_ASSETS, ...EXTERNAL_ASSETS]);
-      self.skipWaiting();
-    })()
+    caches
+      .open(CACHE_NAME)
+      .then(cache => cache.addAll(APP_ASSETS))
+      .then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    (async () => {
-      const keys = await caches.keys();
-      await Promise.all(
-        keys
-          .filter(key => key.startsWith('travelmate-') && key !== CACHE_NAME)
-          .map(key => caches.delete(key))
-      );
-      self.clients.claim();
-    })()
+    caches
+      .keys()
+      .then(keys =>
+        Promise.all(
+          keys
+            .filter(key => key.startsWith('travelmate-') && key !== CACHE_NAME)
+            .map(key => caches.delete(key))
+        )
+      )
+      .then(() => self.clients.claim())
   );
 });
 
@@ -77,7 +76,7 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   if (
     url.hostname.includes('api.weatherapi.com') ||
-    url.hostname.includes('nominatim.openstreetmap.org')
+    url.hostname.includes('nominatim')
   ) {
     event.respondWith(
       fetch(request).catch(() => caches.match('/offline.html'))
@@ -87,20 +86,19 @@ self.addEventListener('fetch', event => {
 
   if (request.mode === 'navigate') {
     event.respondWith(
-      caches.match(request).then(cachedResponse => {
-        if (cachedResponse) return cachedResponse;
-
-        return fetch(request)
-          .then(response => {
-            if (response.ok) {
-              caches
-                .open(CACHE_NAME)
-                .then(cache => cache.put(request, response.clone()));
-            }
-            return response;
-          })
-          .catch(() => caches.match('/offline.html'));
-      })
+      (async () => {
+        try {
+          const response = await fetch(request);
+          if (response && response.ok) {
+            const cache = await caches.open(CACHE_NAME);
+            await cache.put(request, response.clone());
+          }
+          return response;
+        } catch {
+          const cached = await caches.match(request);
+          return cached || caches.match('/offline.html');
+        }
+      })()
     );
     return;
   }
@@ -111,7 +109,7 @@ self.addEventListener('fetch', event => {
 
       return fetch(request)
         .then(response => {
-          if (response.ok) {
+          if (response && response.ok) {
             caches.open(CACHE_NAME).then(cache => {
               cache.put(request, response.clone());
               trimCache(CACHE_NAME, MAX_CACHE_ITEMS);
