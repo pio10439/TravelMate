@@ -12,6 +12,7 @@ const translations = {
     getLocationButton: 'Get Current Location',
     getWeatherButton: 'Get Weather',
     cityInputPlaceholder: 'Enter city name',
+    cityInputLabel: 'Enter city name',
     errorFetchWeather:
       'Unable to fetch weather. Showing last saved data if available.',
     errorNoLocation: 'Unable to get your location',
@@ -33,6 +34,7 @@ const translations = {
     getLocationButton: 'Pobierz bieżącą lokalizację',
     getWeatherButton: 'Pobierz pogodę',
     cityInputPlaceholder: 'Wpisz nazwę miasta',
+    cityInputLabel: 'Wpisz nazwę miasta',
     errorFetchWeather:
       'Nie udało się pobrać pogody. Wyświetlamy ostatnie zapisane dane, jeśli są dostępne.',
     errorNoLocation: 'Nie udało się uzyskać Twojej lokalizacji',

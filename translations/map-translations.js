@@ -8,6 +8,9 @@ const translations = {
     enterNamePrompt: 'Enter name for this visited place:',
     enterCityPrompt: 'Enter city name:',
     enterDescriptionPrompt: 'Enter description:',
+    addPlaceTitle: 'Add Place',
+    saveButton: 'Save',
+    cancelButton: 'Cancel',
   },
   Polish: {
     mapTitle: 'Mapa podróży',
@@ -15,8 +18,11 @@ const translations = {
     cityLabel: 'Miasto',
     descriptionLabel: 'Opis',
     deleteButton: 'Usuń',
-    enterNamePrompt: 'Wpisz nazwę dla tego odwiedzonego miejsca:',
+    enterNamePrompt: 'Wpisz nazwę odwiedzonego miejsca:',
     enterCityPrompt: 'Wpisz nazwę miasta:',
     enterDescriptionPrompt: 'Wpisz opis:',
+    addPlaceTitle: 'Dodaj miejsce',
+    saveButton: 'Zapisz',
+    cancelButton: 'Anuluj',
   },
 };

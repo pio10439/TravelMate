@@ -1,17 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="" data-lang="">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Your trip dashboard in TravelMate" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="author" content="Piotr Owczarzak" />
+    <meta name="theme-color" content="#3498db" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="TravelMate" />
+
     <title>TravelMate - Dashboard</title>
+
     <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="images/favicon.png" type="image/png" />
     <link rel="stylesheet" href="css/style.css" />
-    <script src="js/utils.js" defer></script>
-    <script src="translations/nav-translation.js" defer></script>
-    <script src="translations/translation.js" defer></script>
-    <script src="js/theme.js" defer></script>
-    <script src="js/toast.js" defer></script>
-    <script src="js/main.js" defer></script>
+    <link rel="preconnect" href="https://api.weatherapi.com" />
+    <link rel="preconnect" href="https://tile.openstreetmap.org" />
+
+    <script src="js/utils.js" defer crossorigin="anonymous"></script>
+    <script
+      src="translations/nav-translation.js"
+      defer
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="translations/translation.js"
+      defer
+      crossorigin="anonymous"
+    ></script>
+    <script src="js/theme.js" defer crossorigin="anonymous"></script>
+    <script src="js/toast.js" defer crossorigin="anonymous"></script>
+    <script src="js/main.js" defer crossorigin="anonymous"></script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -24,11 +44,11 @@
     </script>
   </head>
   <body>
-    <header>
+    <header role="banner">
       <div class="header-top">
         <h1>TravelMate</h1>
       </div>
-      <nav>
+      <nav role="navigation" aria-label="Main Navigation">
         <a href="index.html" class="active">Dashboard</a>
         <a href="add-trip.html">Add Trip</a>
         <a href="map.html">Map</a>
@@ -38,8 +58,8 @@
     </header>
     <main>
       <h2>Your Trips</h2>
-      <ul id="trip-list"></ul>
+      <ul id="trip-list" role="list" aria-live="polite"></ul>
     </main>
-    <div id="toast-container"></div>
+    <div id="toast-container" role="alert" aria-live="polite"></div>
   </body>
 </html>

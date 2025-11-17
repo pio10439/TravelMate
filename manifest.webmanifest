@@ -1,12 +1,12 @@
 {
   "name": "TravelMate",
   "short_name": "TravelMate",
-  "start_url": "./index.html",
+  "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
-  "scope": "./",
   "background_color": "#ffffff",
   "theme_color": "#2196f3",
-  "description": "Aplikacja do planowania i śledzenia podróży",
+  "description": "A travel planning and tracking app",
   "orientation": "portrait",
   "icons": [
     {
@@ -17,6 +17,17 @@
     {
       "src": "images/travel-bag.png",
       "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "images/travel-bag.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/images/photo180.png",
+      "sizes": "180x180",
       "type": "image/png"
     }
   ]

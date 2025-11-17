@@ -6,6 +6,29 @@ const notifFreqRadios = document.getElementsByName('notif-freq');
 const toast = document.getElementById('toast');
 
 let notifInterval = null;
+
+const __cleanupListeners = [];
+function addListener(target, event, handler, options) {
+  if (!target || typeof target.addEventListener !== 'function') return;
+  target.addEventListener(event, handler, options);
+  __cleanupListeners.push(() => {
+    try {
+      target.removeEventListener(event, handler, options);
+    } catch (e) {}
+  });
+}
+window.addEventListener('beforeunload', () =>
+  __cleanupListeners.forEach(fn => fn())
+);
+
+function debounce(fn, delay = 200) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), delay);
+  };
+}
+
 // Tlumaczenia
 function updateSettingsUI() {
   document.querySelector('header h1').textContent = getTranslation(
@@ -76,7 +99,11 @@ function updateSettingsUI() {
 toggleThemeBtn.addEventListener('click', () => {
   document.body.classList.toggle('dark-theme');
   const isDark = document.body.classList.contains('dark-theme');
-  localStorage.setItem('darkTheme', isDark);
+  try {
+    localStorage.setItem('darkTheme', isDark);
+  } catch (e) {
+    console.warn('Could not write darkTheme to localStorage', e);
+  }
   const mode = isDark
     ? getTranslation('dark', translations)
     : getTranslation('light', translations);
@@ -85,24 +112,36 @@ toggleThemeBtn.addEventListener('click', () => {
   );
 });
 // Zmiana jezyka PL/EN
-languageSelect.addEventListener('change', () => {
-  const language = languageSelect.value;
-  localStorage.setItem('language', language);
-  updateSettingsUI();
-  updateNavUI();
-  showToast(
-    getTranslation('toastLanguageSet', translations).replace(
-      '{language}',
-      getTranslation(`language${language}`, translations)
-    )
-  );
-  document.dispatchEvent(new CustomEvent('languageChange'));
-});
+languageSelect.addEventListener(
+  'change',
+  debounce(() => {
+    if (!languageSelect) return;
+    const language = languageSelect.value;
+    try {
+      localStorage.setItem('language', language);
+    } catch (e) {
+      console.warn('Could not save language', e);
+    }
+    updateSettingsUI();
+    updateNavUI();
+    showToast(
+      getTranslation('toastLanguageSet', translations).replace(
+        '{language}',
+        getTranslation(`language${language}`, translations)
+      )
+    );
+    document.dispatchEvent(new CustomEvent('languageChange'));
+  }, 200)
+);
 // Zmiana jednostek temp
 tempUnitRadios.forEach(radio => {
   radio.addEventListener('change', () => {
     const unit = radio.value;
-    localStorage.setItem('tempUnit', unit);
+    try {
+      localStorage.setItem('tempUnit', unit);
+    } catch (e) {
+      console.warn('Could not save tempUnit', e);
+    }
     showToast(
       getTranslation('toastTempUnitSet', translations).replace(
         '{unit}',
@@ -115,7 +154,11 @@ tempUnitRadios.forEach(radio => {
 notifFreqRadios.forEach(radio => {
   radio.addEventListener('change', () => {
     const freq = radio.value;
-    localStorage.setItem('notificationFrequency', freq);
+    try {
+      localStorage.setItem('notificationFrequency', freq);
+    } catch (e) {
+      console.warn('Could not save notificationFrequency', e);
+    }
     updateNotifications();
     showToast(
       getTranslation('toastNotifFreqSet', translations).replace(
@@ -130,28 +173,34 @@ notifFreqRadios.forEach(radio => {
 });
 
 window.addEventListener('load', () => {
-  const isDark = localStorage.getItem('darkTheme') === 'true';
-  if (isDark) document.body.classList.add('dark-theme');
+  try {
+    const isDark = localStorage.getItem('darkTheme') === 'true';
+    if (isDark) document.body.classList.add('dark-theme');
 
-  const notifEnabled = localStorage.getItem('notificationsEnabled') === 'true';
-  updateNotifButton(notifEnabled);
-  if (notifEnabled) updateNotifications();
+    const notifEnabled =
+      localStorage.getItem('notificationsEnabled') === 'true';
+    updateNotifButton(notifEnabled);
+    if (notifEnabled) updateNotifications();
 
-  const language = localStorage.getItem('language') || 'English';
-  languageSelect.value = language;
+    const language = localStorage.getItem('language') || 'English';
+    languageSelect.value = language;
 
-  const tempUnit = localStorage.getItem('tempUnit') || 'celsius';
-  document.querySelector(
-    `input[name="temp-unit"][value="${tempUnit}"]`
-  ).checked = true;
+    const tempUnit = localStorage.getItem('tempUnit') || 'celsius';
+    document.querySelector(
+      `input[name="temp-unit"][value="${tempUnit}"]`
+    ).checked = true;
 
-  const notifFreq = localStorage.getItem('notificationFrequency') || 'off';
-  document.querySelector(
-    `input[name="notif-freq"][value="${notifFreq}"]`
-  ).checked = true;
+    const notifFreq = localStorage.getItem('notificationFrequency') || 'off';
+    document.querySelector(
+      `input[name="notif-freq"][value="${notifFreq}"]`
+    ).checked = true;
 
-  updateSettingsUI();
-  updateNavUI();
+    updateSettingsUI();
+    updateNavUI();
+  } catch (e) {
+    console.error('Error during load', e);
+    showToast(getTranslation('toastLoadError', translations));
+  }
 });
 // Wlacz/wylacz powiadomienia
 notifToggleBtn.addEventListener('click', async () => {
@@ -159,20 +208,29 @@ notifToggleBtn.addEventListener('click', async () => {
 
   if (!notifEnabled) {
     if (!('Notification' in window)) {
-      return alert(getTranslation('toastNotifPermissionDenied', translations));
+      return showToast(
+        getTranslation('toastNotifPermissionDenied', translations)
+      );
     }
     // Pozwolenia na powiadomienia
-    const permission = await Notification.requestPermission();
-    if (permission === 'granted') {
-      localStorage.setItem('notificationsEnabled', 'true');
-      updateNotifButton(true);
-      updateNotifications();
-      showToast(getTranslation('toastNotifEnabled', translations));
-    } else {
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        localStorage.setItem('notificationsEnabled', 'true');
+        updateNotifButton(true);
+        updateNotifications();
+        showToast(getTranslation('toastNotifEnabled', translations));
+      } else {
+        showToast(getTranslation('toastNotifPermissionDenied', translations));
+      }
+    } catch (e) {
+      console.error('Notification permission error', e);
       showToast(getTranslation('toastNotifPermissionDenied', translations));
     }
   } else {
-    localStorage.setItem('notificationsEnabled', 'false');
+    try {
+      localStorage.setItem('notificationsEnabled', 'false');
+    } catch (e) {}
     updateNotifButton(false);
     stopNotifications();
     showToast(getTranslation('toastNotifDisabled', translations));
@@ -186,9 +244,13 @@ function updateNotifications() {
 
   const freq = localStorage.getItem('notificationFrequency') || 'off';
   let interval = null;
-
+  if (freq === 'off') {
+    notifInterval = null;
+    return;
+  }
   if (freq === 'daily') {
-    interval = 24 * 60 * 60 * 1000;
+    //test 24 * 60 * 60 * 1000;
+    interval = 10 * 1000;
   } else if (freq === 'weekly') {
     interval = 7 * 24 * 60 * 60 * 1000;
   }
@@ -198,19 +260,26 @@ function updateNotifications() {
 // zatrzymanie powiadomien
 function stopNotifications() {
   if (notifInterval) clearInterval(notifInterval);
+  notifInterval = null;
 }
 // Wysyla powiadomienia
 function sendDailyNotification() {
-  if (Notification.permission === 'granted' && 'serviceWorker' in navigator) {
-    navigator.serviceWorker.ready.then(registration => {
-      registration.showNotification(
-        getTranslation('notificationTitle', translations),
-        {
-          body: getTranslation('notificationBody', translations),
-          icon: 'images/business-trip.png',
-        }
-      );
-    });
+  try {
+    if (Notification.permission === 'granted' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.ready
+        .then(registration => {
+          registration.showNotification(
+            getTranslation('notificationTitle', translations),
+            {
+              body: getTranslation('notificationBody', translations),
+              icon: 'images/business-trip.png',
+            }
+          );
+        })
+        .catch(err => console.error('serviceWorker.ready error:', err));
+    }
+  } catch (e) {
+    console.error('sendDailyNotification error:', e);
   }
 }
 
@@ -221,6 +290,7 @@ function updateNotifButton(isEnabled) {
 }
 // Komunikat
 function showToast(message) {
+  if (!toast) return;
   toast.textContent = message;
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 3000);

@@ -30,6 +30,7 @@ const translations = {
     notificationBody: 'Time to plan your next trip! 🌍',
     dark: 'Dark',
     light: 'Light',
+    toastLoadError: 'Error during load',
   },
   Polish: {
     settingsTitle: 'Ustawienia',
@@ -62,5 +63,6 @@ const translations = {
     notificationBody: 'Czas zaplanować kolejną podróż! 🌍',
     dark: 'Ciemny',
     light: 'Jasny',
+    toastLoadError: 'Błąd podczas ładowania strony',
   },
 };

@@ -1,23 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="" data-lang="">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Add a new trip to TravelMate" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="author" content="Piotr Owczarzak" />
+    <meta name="theme-color" content="#3498db" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="TravelMate" />
+
     <title>TravelMate - Add Trip</title>
+
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="images/favicon.png" type="image/png" />
     <link rel="stylesheet" href="css/style.css" />
-    <script src="js/utils.js" defer></script>
-    <script src="translations/nav-translation.js" defer></script>
-    <script src="translations/translation.js" defer></script>
-    <script src="js/theme.js" defer></script>
-    <script src="js/add-trip.js" defer></script>
-    <script src="js/toast.js" defer></script>
+    <link rel="preconnect" href="https://api.weatherapi.com" />
+    <link rel="preconnect" href="https://tile.openstreetmap.org" />
+
+    <script src="js/utils.js" defer crossorigin="anonymous"></script>
+    <script
+      src="translations/nav-translation.js"
+      defer
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="translations/translation.js"
+      defer
+      crossorigin="anonymous"
+    ></script>
+    <script src="js/theme.js" defer crossorigin="anonymous"></script>
+    <script src="js/add-trip.js" defer crossorigin="anonymous"></script>
+    <script src="js/toast.js" defer crossorigin="anonymous"></script>
   </head>
   <body>
-    <header>
+    <header role="banner">
       <div class="header-top">
         <h1>Add Trip</h1>
       </div>
-      <nav>
+      <nav role="navigation" aria-label="Main Navigation">
         <a href="index.html">Dashboard</a>
         <a href="add-trip.html" class="active">Add Trip</a>
         <a href="map.html">Map</a>
@@ -26,44 +47,59 @@
       </nav>
     </header>
     <main>
-      <form id="trip-form">
-        <input type="text" id="trip-name" placeholder="Trip Name" required />
+      <form id="trip-form" role="form" aria-labelledby="trip-form-title">
+        <h2 id="trip-form-title" class="visually-hidden">Add Trip</h2>
+        <label for="trip-name" data-i18n="tripNameLabel">Trip name</label>
+        <input
+          type="text"
+          id="trip-name"
+          name="trip-name"
+          placeholder="Trip Name"
+          required
+          aria-required="true"
+        />
+        <label for="trip-city" data-i18n="tripCityLabel"
+          >Destination City</label
+        >
         <input
           type="text"
           id="trip-city"
+          name="trip-city"
           placeholder="Destination City"
           required
+          aria-required="true"
         />
+        <label for="trip-desc" data-i18n="tripDescLabel">Description</label>
         <textarea
-          style="resize: none"
           id="trip-desc"
-          placeholder="What do you want to see? Use · for bullet points"
+          name="trip-desc"
+          class="no-resize"
+          placeholder="What do you want to see?"
           required
+          aria-required="true"
         ></textarea>
         <div class="photo-section">
-          <button type="button" id="add-photo">Dodaj zdjęcie</button>
+          <button type="button" id="add-photo" aria-label="Add photo">
+            Add photo
+          </button>
         </div>
         <img
           id="photo-preview"
-          src=""
-          alt="Podgląd"
-          style="
-            display: none;
-            max-width: 100%;
-            margin: 15px 0;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-          "
+          src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+          alt="Photo preview"
+          class="photo-preview"
         />
         <div class="location-section">
-          <button type="button" id="get-location">Get GPS Location</button>
-          <p id="current-location-display">
+          <button type="button" id="get-location" aria-label="Get GPS location">
+            Get GPS Location
+          </button>
+          <p id="current-location-display" aria-live="polite">
             Your current location: not detected yet
           </p>
         </div>
         <button type="submit">Save Trip</button>
       </form>
     </main>
-    <div id="toast-container"></div>
+    <div id="toast-container" role="alert" aria-live="polite"></div>
   </body>
 </html>

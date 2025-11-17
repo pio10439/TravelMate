@@ -1,23 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="" data-lang="">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Customize your TravelMate settings and preferences"
+    />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="author" content="Piotr Owczarzak" />
+    <meta name="theme-color" content="#3498db" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="TravelMate" />
+
     <title>TravelMate - Settings</title>
+
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="images/favicon.png" type="image/png" />
     <link rel="stylesheet" href="css/style.css" />
-    <script src="js/utils.js" defer></script>
-    <script src="translations/nav-translation.js" defer></script>
-    <script src="translations/settings-translations.js" defer></script>
-    <script src="js/theme.js" defer></script>
-    <script src="js/settings.js" defer></script>
-    <script src="js/toast.js" defer></script>
+    <link rel="preconnect" href="https://api.weatherapi.com" />
+    <link rel="preconnect" href="https://tile.openstreetmap.org" />
+
+    <script src="js/utils.js" defer crossorigin="anonymous"></script>
+    <script
+      src="translations/nav-translation.js"
+      defer
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="translations/settings-translations.js"
+      defer
+      crossorigin="anonymous"
+    ></script>
+    <script src="js/theme.js" defer crossorigin="anonymous"></script>
+    <script src="js/settings.js" defer crossorigin="anonymous"></script>
+    <script src="js/toast.js" defer crossorigin="anonymous"></script>
   </head>
   <body>
-    <header>
+    <header role="banner">
       <div class="header-top">
         <h1>Settings</h1>
       </div>
-      <nav>
+      <nav role="navigation" aria-label="Main Navigation">
         <a href="index.html">Dashboard</a>
         <a href="add-trip.html">Add Trip</a>
         <a href="map.html">Map</a>
@@ -26,25 +50,27 @@
       </nav>
     </header>
     <main>
-      <div class="settings-section card">
-        <h2 class="appearance-title">Appearance</h2>
+      <div class="settings-section card" role="region">
+        <h2 id="appearance-title" class="appearance-title">Appearance</h2>
         <div class="setting-item">
           <label for="toggle-theme" class="theme-label">Theme</label>
-          <button id="toggle-theme">Toggle Dark Mode</button>
+          <button id="toggle-theme" aria-label="Toggle Dark Mode">
+            Toggle Dark Mode
+          </button>
         </div>
       </div>
-      <div class="settings-section card">
-        <h2 class="preferences-title">Preferences</h2>
+      <div class="settings-section card" role="region">
+        <h2 id="preferences-title" class="preferences-title">Preferences</h2>
         <div class="setting-item">
           <label for="language-select" class="language-label">Language</label>
-          <select id="language-select">
+          <select id="language-select" name="language">
             <option value="English">English</option>
             <option value="Polish">Polish</option>
           </select>
         </div>
         <div class="setting-item">
           <label class="temp-unit-label">Temperature Unit</label>
-          <div class="radio-group">
+          <div class="radio-group" role="radiogroup">
             <label for="celsius">
               <input
                 type="radio"
@@ -67,17 +93,21 @@
           </div>
         </div>
       </div>
-      <div class="settings-section card">
-        <h2 class="notifications-title">Notifications</h2>
+      <div class="settings-section card" role="region">
+        <h2 id="notifications-title" class="notifications-title">
+          Notifications
+        </h2>
         <div class="setting-item">
           <label for="notif-toggle" class="notif-status-label"
             >Notification Status</label
           >
-          <button id="notif-toggle">Enable Notifications</button>
+          <button id="notif-toggle" aria-label="Enable Notifications">
+            Enable Notifications
+          </button>
         </div>
         <div class="setting-item">
           <label class="notif-freq-label">Notification Frequency</label>
-          <div class="radio-group">
+          <div class="radio-group" role="radiogroup">
             <label for="notif-off">
               <input
                 type="radio"
@@ -109,8 +139,7 @@
           </div>
         </div>
       </div>
-      <div id="toast" class="toast"></div>
     </main>
-    <div id="toast-container"></div>
+    <div id="toast-container" role="alert" aria-live="polite"></div>
   </body>
 </html>

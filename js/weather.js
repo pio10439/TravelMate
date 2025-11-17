@@ -1,48 +1,67 @@
-const apiKey = '89f7ee0e098f472e88492420252310'; // klucz Api z WeatherApi
+const apiKey = document.querySelector('meta[name="weather-api-key"]')?.content;
+if (!apiKey) console.warn('No API key in <meta>!');
+
 const weatherDisplay = document.getElementById('weather-display');
 const hintContainer = document.getElementById('offline-weather-hint');
 const hintText = document.getElementById('hint-text');
 const cityInput = document.getElementById('city-input');
-// Dobor klasy css w zaleznosci od pogody zeby wyswietlic animacje
+
+// Toast
+function showToast(message) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = message;
+  document.body.appendChild(t);
+  setTimeout(() => t.classList.add('show'), 10);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// Dobór klasy animacji pogody
 function getWeatherClass(condition) {
+  if (!condition) return '';
   const c = condition.toLowerCase();
   if (c.includes('sunny') || c.includes('clear')) return 'sunny';
   if (c.includes('cloud') || c.includes('overcast')) return 'cloudy';
-  if (c.includes('rain') || c.includes('shower') || c.includes('storm'))
-    return 'rainy';
+  if (c.includes('rain')) return 'rainy';
   return '';
 }
-// Tlumaczenia
-function updateWeatherUI() {
-  document.querySelector('header h1').textContent = getTranslation(
-    'weatherTitle',
-    translations
-  );
-  document.getElementById('get-location').textContent = getTranslation(
-    'getLocationButton',
-    translations
-  );
-  document.getElementById('get-city').textContent = getTranslation(
-    'getWeatherButton',
-    translations
-  );
-  cityInput.placeholder = getTranslation('cityInputPlaceholder', translations);
-}
-// Info o ostaniej aktualizacji jak jest offline
-function updateHint() {
-  const last = localStorage.getItem('lastWeather');
-  if (!last || navigator.onLine) {
-    hintContainer.style.display = 'none';
-    return;
-  }
 
+// UI tłumaczenia
+function updateWeatherUI() {
   try {
+    const title = document.querySelector('header h1');
+    if (title) title.textContent = getTranslation('weatherTitle');
+
+    const btnLoc = document.getElementById('get-location');
+    if (btnLoc) btnLoc.textContent = getTranslation('getLocationButton');
+
+    const btnCity = document.getElementById('get-city');
+    if (btnCity) btnCity.textContent = getTranslation('getWeatherButton');
+
+    if (cityInput)
+      cityInput.placeholder = getTranslation('cityInputPlaceholder');
+    const cityLabel = document.querySelector(
+      'label[data-i18n="cityInputLabel"]'
+    );
+    if (cityLabel) cityLabel.textContent = getTranslation('cityInputLabel');
+  } catch (e) {
+    console.error('updateWeatherUI error:', e);
+  }
+}
+
+function updateHint() {
+  try {
+    const last = localStorage.getItem('lastWeather');
+    if (!last || navigator.onLine === true) {
+      hintContainer.style.display = 'none';
+      return;
+    }
+
     const data = JSON.parse(last);
     const time = data.current?.last_updated || data.location?.localtime;
     if (!time) return (hintContainer.style.display = 'none');
 
-    const date = new Date(time);
-    const formatted = date.toLocaleString('pl-PL', {
+    const formatted = new Date(time).toLocaleString('pl-PL', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -52,111 +71,177 @@ function updateHint() {
     });
 
     hintContainer.style.display = 'block';
-    hintText.textContent = `${getTranslation(
-      'lastWeather',
-      translations
-    )}: ${formatted}`;
+    hintText.textContent = `${getTranslation('lastWeather')}: ${formatted}`;
   } catch (e) {
     hintContainer.style.display = 'none';
   }
 }
-// Wyswietlenie pogody
+
+function renderWeather(data) {
+  weatherDisplay.replaceChildren();
+
+  const fragment = document.createDocumentFragment();
+
+  const title = document.createElement('h2');
+  title.textContent = `${data.location.name}, ${data.location.country}`;
+  fragment.appendChild(title);
+
+  const cond = document.createElement('p');
+  cond.className = 'condition';
+  cond.textContent = `${getTranslation('conditionLabel')}: ${
+    data.current.condition.text
+  }`;
+  fragment.appendChild(cond);
+
+  const iconWrap = document.createElement('div');
+  iconWrap.className = 'weather-icon-wrapper';
+  const img = document.createElement('img');
+  img.src = 'https:' + data.current.condition.icon;
+  img.alt = 'weather icon';
+  img.className = 'weather-icon';
+  iconWrap.appendChild(img);
+  fragment.appendChild(iconWrap);
+
+  const unit = localStorage.getItem('tempUnit') || 'celsius';
+  const t = unit === 'fahrenheit' ? data.current.temp_f : data.current.temp_c;
+  const feels =
+    unit === 'fahrenheit' ? data.current.feelslike_f : data.current.feelslike_c;
+  const sym = unit === 'fahrenheit' ? '°F' : '°C';
+
+  const temp = document.createElement('p');
+  temp.textContent = `${getTranslation(
+    'temperatureLabel'
+  )}: ${t} ${sym} (${getTranslation('feelsLikeLabel')}: ${feels} ${sym})`;
+  fragment.appendChild(temp);
+
+  const hum = document.createElement('p');
+  hum.textContent = `${getTranslation('humidityLabel')}: ${
+    data.current.humidity
+  }%`;
+  fragment.appendChild(hum);
+
+  const wind = document.createElement('p');
+  wind.textContent = `${getTranslation('windLabel')}: ${
+    data.current.wind_kph
+  } ${getTranslation('kphUnit')}`;
+  fragment.appendChild(wind);
+
+  const uv = document.createElement('p');
+  uv.textContent = `${getTranslation('uvIndexLabel')}: ${data.current.uv}`;
+  fragment.appendChild(uv);
+
+  weatherDisplay.appendChild(fragment);
+
+  const cls = getWeatherClass(data.current.condition.text);
+  weatherDisplay.className = cls;
+}
+
 function showWeather(data) {
-  weatherDisplay.className = '';
-  if (data.error) {
-    // jak jest blad
-    weatherDisplay.classList.add('error');
-    weatherDisplay.innerHTML = `<p class="error-message">${getTranslation(
-      'cityNotFound',
-      translations
-    )}</p>`;
+  try {
+    if (data.error) {
+      weatherDisplay.textContent = getTranslation('cityNotFound');
+      updateHint();
+      return;
+    }
+
+    renderWeather(data);
+    localStorage.setItem('lastWeather', JSON.stringify(data));
     updateHint();
+  } catch (e) {
+    console.error('showWeather error:', e);
+  }
+}
+
+async function fetchWeather(url) {
+  try {
+    const r = await fetch(url);
+    const data = await r.json();
+    showWeather(data);
+  } catch (e) {
+    console.warn('Fetch error – using cache:', e);
+    const last = localStorage.getItem('lastWeather');
+    if (last) showWeather(JSON.parse(last));
+  }
+}
+
+function fetchWeatherByCity(city) {
+  if (!city || city.length < 2) {
+    showToast(getTranslation('errorNoCity'));
     return;
   }
-
-  const c = data.current; //aktualna pogoda
-  const l = data.location; //lokalizacja
-  const iconUrl = 'https:' + c.condition.icon; // ikonka z Api
-  const cls = getWeatherClass(c.condition.text); // klasa ustalona do tla
-  // jednostki
-  const unit = localStorage.getItem('tempUnit') || 'celsius';
-  const temp = unit === 'fahrenheit' ? c.temp_f : c.temp_c;
-  const feels = unit === 'fahrenheit' ? c.feelslike_f : c.feelslike_c;
-  const sym = unit === 'fahrenheit' ? '°F' : '°C';
-  // generowanie HTML z wyswietlaniem pogody
-  weatherDisplay.classList.add(cls);
-  weatherDisplay.innerHTML = `
-    <h2>${l.name}, ${l.country}</h2>
-    <p class="condition">${getTranslation('conditionLabel', translations)}: ${
-    c.condition.text
-  }</p>
-    <div class="weather-icon-wrapper">
-      <img src="${iconUrl}" alt="weather icon" class="weather-icon">
-    </div>
-    <p>${getTranslation('temperatureLabel', translations)}: ${temp} ${sym}
-       (${getTranslation('feelsLikeLabel', translations)}: ${feels} ${sym})</p>
-    <p>${getTranslation('humidityLabel', translations)}: ${c.humidity}%</p>
-    <p>${getTranslation('windLabel', translations)}: ${
-    c.wind_kph
-  } ${getTranslation('kphUnit', translations)}</p>
-    <p>${getTranslation('uvIndexLabel', translations)}: ${c.uv}</p>
-  `;
-
-  localStorage.setItem('lastWeather', JSON.stringify(data)); // zapis do bazy zeby wyswietlic jak bedzie offline
-  updateHint();
-}
-// Pobranie danych z Api
-function fetchWeatherByCity(city) {
-  fetch(
-    `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=no`
-  )
-    .then(r => r.json())
-    .then(showWeather)
-    .catch(() => {
-      const last = localStorage.getItem('lastWeather');
-      if (last) showWeather(JSON.parse(last));
-    });
+  fetchWeather(
+    `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${encodeURIComponent(
+      city
+    )}&aqi=no`
+  );
 }
 
 function fetchWeatherByCoords(lat, lon) {
-  fetch(
+  fetchWeather(
     `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${lat},${lon}&aqi=no`
-  )
-    .then(r => r.json())
-    .then(showWeather)
-    .catch(() => {
-      const last = localStorage.getItem('lastWeather');
-      if (last) showWeather(JSON.parse(last));
-    });
+  );
 }
-// odswiezenie
+
+function debounce(fn, delay = 400) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), delay);
+  };
+}
+
+const debouncedCityFetch = debounce(() => {
+  const city = cityInput.value.trim();
+  fetchWeatherByCity(city);
+});
+
 function refreshAll() {
-  const last = localStorage.getItem('lastWeather');
-  if (last) showWeather(JSON.parse(last));
+  try {
+    const last = localStorage.getItem('lastWeather');
+    if (last) showWeather(JSON.parse(last));
+  } catch {}
+
   updateWeatherUI();
   updateNavUI();
   updateHint();
 }
-// Nasluchiwanie zmian
-window.addEventListener('load', refreshAll);
-document.addEventListener('languageChange', refreshAll);
-window.addEventListener('online', () => {
-  hintContainer.style.display = 'none';
-  refreshAll();
-});
-window.addEventListener('offline', refreshAll);
-// Pobranie pogody z aktualnej lokalizacji
-document.getElementById('get-location').addEventListener('click', () => {
-  if (!navigator.geolocation)
-    return alert(getTranslation('errorNoGeolocation', translations));
-  navigator.geolocation.getCurrentPosition(
-    p => fetchWeatherByCoords(p.coords.latitude, p.coords.longitude),
-    () => alert(getTranslation('errorNoLocation', translations))
-  );
-});
-// Pobranie pogody po wpisaniu miasta
-document.getElementById('get-city').addEventListener('click', () => {
-  const city = cityInput.value.trim();
-  if (!city) return alert(getTranslation('errorNoCity', translations));
-  fetchWeatherByCity(city);
-});
+
+function initListeners() {
+  const onLoad = refreshAll;
+  const onOnline = refreshAll;
+  const onOffline = refreshAll;
+  const onLang = refreshAll;
+
+  const btnLoc = document.getElementById('get-location');
+  const btnCity = document.getElementById('get-city');
+
+  const onLocClick = () => {
+    if (!navigator.geolocation)
+      return showToast(getTranslation('errorNoGeolocation'));
+
+    navigator.geolocation.getCurrentPosition(
+      pos => fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude),
+      () => showToast(getTranslation('errorNoLocation'))
+    );
+  };
+
+  const onCityClick = debouncedCityFetch;
+
+  window.addEventListener('load', onLoad);
+  window.addEventListener('online', onOnline);
+  window.addEventListener('offline', onOffline);
+  document.addEventListener('languageChange', onLang);
+  btnLoc?.addEventListener('click', onLocClick);
+  btnCity?.addEventListener('click', onCityClick);
+
+  window.addEventListener('beforeunload', () => {
+    window.removeEventListener('load', onLoad);
+    window.removeEventListener('online', onOnline);
+    window.removeEventListener('offline', onOffline);
+    document.removeEventListener('languageChange', onLang);
+    btnLoc?.removeEventListener('click', onLocClick);
+    btnCity?.removeEventListener('click', onCityClick);
+  });
+}
+
+initListeners();

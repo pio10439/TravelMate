@@ -1,28 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="" data-lang="">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="View your saved trips on an interactive map"
+    />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="author" content="Piotr Owczarzak" />
+    <meta name="theme-color" content="#3498db" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="TravelMate" />
+
     <title>TravelMate - Trip Map</title>
+
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="images/favicon.png" type="image/png" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="js/utils.js" defer></script>
-    <script src="translations/nav-translation.js" defer></script>
-    <script src="translations/map-translations.js" defer></script>
-    <script src="js/theme.js" defer></script>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js" defer></script>
-    <script src="js/map.js" defer></script>
-    <script src="js/toast.js" defer></script>
+    <link rel="preconnect" href="https://api.weatherapi.com" />
+    <link rel="preconnect" href="https://tile.openstreetmap.org" />
+
+    <script src="js/utils.js" defer crossorigin="anonymous"></script>
+    <script
+      src="translations/nav-translation.js"
+      defer
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="translations/map-translations.js"
+      defer
+      crossorigin="anonymous"
+    ></script>
+    <script src="js/theme.js" defer crossorigin="anonymous"></script>
+    <script
+      src="https://unpkg.com/leaflet/dist/leaflet.js"
+      integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
+      defer
+      crossorigin="anonymous"
+    ></script>
+    <script src="js/map.js" defer crossorigin="anonymous"></script>
+    <script src="js/toast.js" defer crossorigin="anonymous"></script>
   </head>
   <body>
-    <header>
-      <div id="offline-banner" class="offline-banner" style="display: none">
+    <header role="banner">
+      <div
+        id="offline-banner"
+        class="offline-banner"
+        role="alert"
+        aria-live="polite"
+      >
         <span id="offline-text"></span>
       </div>
       <div class="header-top">
         <h1>Trip Map</h1>
       </div>
-      <nav>
+      <nav role="navigation" aria-label="Main Navigation">
         <a href="index.html">Dashboard</a>
         <a href="add-trip.html">Add Trip</a>
         <a href="map.html" class="active">Map</a>
@@ -31,7 +65,15 @@
       </nav>
     </header>
     <main>
-      <div id="map" style="height: 80vh; width: 100%"></div>
+      <div class="map-wrapper">
+        <div
+          id="map"
+          role="region"
+          aria-label="Map display"
+          class="map-container"
+        ></div>
+      </div>
+      <div id="toast-container" role="alert" aria-live="polite"></div>
     </main>
   </body>
 </html>
