@@ -1,7 +1,5 @@
-const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
-if (!apiKey) {
-  console.warn('No API key ');
-}
+const apiKey = document.querySelector('meta[name="weather-api-key"]')?.content;
+if (!apiKey) console.warn('No API key in <meta>!');
 
 const weatherDisplay = document.getElementById('weather-display');
 const hintContainer = document.getElementById('offline-weather-hint');

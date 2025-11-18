@@ -16,7 +16,7 @@ const APP_ASSETS = [
   '/js/main.js',
   '/js/add-trip.js',
   '/js/map.js',
-  '/src/weather.js',
+  '/js/weather.js',
   '/js/settings.js',
   '/js/toast.js',
   '/translations/nav-translation.js',
