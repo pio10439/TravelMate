@@ -53,6 +53,9 @@ self.addEventListener('install', event => {
       .open(CACHE_NAME)
       .then(cache => cache.addAll(APP_ASSETS))
       .then(() => self.skipWaiting())
+      .catch(err => {
+        console.error('Error/cache.addAll ', err);
+      })
   );
 });
 
@@ -68,6 +71,9 @@ self.addEventListener('activate', event => {
         )
       )
       .then(() => self.clients.claim())
+      .catch(err => {
+        console.error('Error/activate', err);
+      })
   );
 });
 
